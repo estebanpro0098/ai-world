@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>AI World</title>
+
+<style>
+
+body{
+  margin:0;
+  font-family:Arial;
+  display:flex;
+  height:100vh;
+  background:black;
+  color:white;
+}
+
+#world{
+  flex:2;
+  position:relative;
+}
+
+.entity{
+  position:absolute;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+}
+
+#chat{
+  flex:1;
+  background:#111;
+  padding:10px;
+  overflow-y:auto;
+}
+
+.message{
+  margin-bottom:8px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="world"></div>
+
+<div id="chat">
+<h3>AI Thoughts</h3>
+<div id="messages"></div>
+</div>
+
+<script>
+
+async function loadWorld(){
+
+  const res = await fetch("/world")
+  const data = await res.json()
+
+  document.body.style.background = data.background
+
+  const world = document.getElementById("world")
+  world.innerHTML=""
+
+  data.entities.forEach(e=>{
+    const el=document.createElement("div")
+    el.className="entity"
+    el.style.background=e.color
+    el.style.left=Math.random()*90+"%"
+    el.style.top=Math.random()*90+"%"
+    world.appendChild(el)
+  })
+
+}
+
+async function loadChat(){
+
+  const res = await fetch("/chat")
+  const data = await res.json()
+
+  const messages=document.getElementById("messages")
+  messages.innerHTML=""
+
+  data.slice(-20).forEach(m=>{
+    const div=document.createElement("div")
+    div.className="message"
+    div.textContent=m.author+": "+m.text
+    messages.appendChild(div)
+  })
+
+}
+
+function update(){
+  loadWorld()
+  loadChat()
+}
+
+setInterval(update,3000)
+update()
+
+</script>
+
+</body>
+</html>
